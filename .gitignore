@@ -1,0 +1,72 @@
+# Java
+*.class
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
+*.out
+
+# Eclipse
+.project
+.classpath
+/.settings/
+/bin/
+/target/
+/tmp/
+/.mvn/
+/.m2/repository
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Visual Studio Code
+.vscode/
+
+# npm
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Angular
+.angular/
+dist/
+out-tsc/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+/src/*.js
+/src/*.js.map
+
+# Ionic
+platforms/
+plugins/
+www/
+.idea/
+.sourcemaps/
+.ionic/
+coverage/
+
+# Generated files
+*.log
+*.lock
+*.tmp
+*.swp
+*.DS_Store
