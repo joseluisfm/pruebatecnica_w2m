@@ -78,11 +78,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		StringBuilder sb = new StringBuilder();
 		if (e != null) {
 			Throwable thr = e;
-			while ((thr instanceof RestException || thr instanceof LogicException) && thr.getCause() != null) {
+			while (thr != null && (thr instanceof RestException || thr instanceof LogicException)) {
 				if (!sb.isEmpty()) {
-					sb.append("; ");
+					sb.append(": ");
 				}
-				sb.append(thr.getCause().getMessage());
+				sb.append(thr.getMessage());
 				thr = thr.getCause();
 			}
 			if (sb.toString().isEmpty()) {
