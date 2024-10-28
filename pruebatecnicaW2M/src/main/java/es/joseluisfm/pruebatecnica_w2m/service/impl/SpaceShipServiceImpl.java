@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import es.joseluisfm.pruebatecnica_w2m.dto.in.EditSpaceShipINDTO;
 import es.joseluisfm.pruebatecnica_w2m.dto.in.NewSpaceShipINDTO;
-import es.joseluisfm.pruebatecnica_w2m.dto.in.SpaceShipsINDTO;
+import es.joseluisfm.pruebatecnica_w2m.dto.in.PageableINDTO;
 import es.joseluisfm.pruebatecnica_w2m.dto.out.PageableOUTDTO;
 import es.joseluisfm.pruebatecnica_w2m.dto.out.SpaceShipOUTDTO;
 import es.joseluisfm.pruebatecnica_w2m.dto.out.SpaceShipsOUTDTO;
@@ -35,9 +35,9 @@ public class SpaceShipServiceImpl implements SpaceShipService {
 	}
 
 	@Override
-	public SpaceShipsOUTDTO getAllSpaceShips(SpaceShipsINDTO spaceShipsINDTO) {
+	public SpaceShipsOUTDTO getAllSpaceShips(PageableINDTO pageableINDTO) {
 
-		Page<SpaceShipEntity> resultPage = spaceShipRepository.findAll(spaceShipsINDTO.getPageable().toPageable());
+		Page<SpaceShipEntity> resultPage = spaceShipRepository.findAll(pageableINDTO.toPageable());
 
 		SpaceShipsOUTDTO result = new SpaceShipsOUTDTO();
 		result.setPageable(new PageableOUTDTO(resultPage));

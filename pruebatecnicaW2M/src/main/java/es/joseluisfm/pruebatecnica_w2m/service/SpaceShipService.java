@@ -4,14 +4,14 @@ import java.util.List;
 
 import es.joseluisfm.pruebatecnica_w2m.dto.in.EditSpaceShipINDTO;
 import es.joseluisfm.pruebatecnica_w2m.dto.in.NewSpaceShipINDTO;
-import es.joseluisfm.pruebatecnica_w2m.dto.in.SpaceShipsINDTO;
+import es.joseluisfm.pruebatecnica_w2m.dto.in.PageableINDTO;
 import es.joseluisfm.pruebatecnica_w2m.dto.out.SpaceShipOUTDTO;
 import es.joseluisfm.pruebatecnica_w2m.dto.out.SpaceShipsOUTDTO;
 import es.joseluisfm.pruebatecnica_w2m.exception.LogicException;
 
 public interface SpaceShipService {
 	
-	public SpaceShipsOUTDTO getAllSpaceShips(SpaceShipsINDTO spaceShipsINDTO);
+	public SpaceShipsOUTDTO getAllSpaceShips(PageableINDTO pageableINDTO);
 	
 	public SpaceShipOUTDTO findById(long id) throws LogicException;
 	

@@ -1,9 +1,25 @@
 package es.joseluisfm.pruebatecnica_w2m.dto.in;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 public class NewSpaceShipINDTO {
 
+	@NotBlank
+	@Size(min = 3, max = 50)
 	private String name;
+	
+	@NotNull
+	@Min(1)
+	@Max(999999)
 	private Double speed;
+	
+	@NotNull
+	@Min(1)
+	@Max(999999999999999999L)
 	private Long fIdType;
 
 	public String getName() {
