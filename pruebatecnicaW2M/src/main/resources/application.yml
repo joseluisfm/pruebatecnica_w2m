@@ -1,3 +1,6 @@
+server:
+  port: 8080
+
 spring:
   application:
     name: pruebatecnica_w2m
@@ -8,3 +11,6 @@ spring:
     driverClassName: org.h2.Driver
   jpa:
     defer-datasource-initialization: true
+
+kafka:
+  bootstrap-servers: kafka:29092
