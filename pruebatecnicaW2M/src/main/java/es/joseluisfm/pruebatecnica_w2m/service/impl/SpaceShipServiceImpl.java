@@ -19,19 +19,28 @@ import es.joseluisfm.pruebatecnica_w2m.dto.out.SpaceShipsOUTDTO;
 import es.joseluisfm.pruebatecnica_w2m.entity.SpaceShipEntity;
 import es.joseluisfm.pruebatecnica_w2m.entity.SpaceShipTypeEntity;
 import es.joseluisfm.pruebatecnica_w2m.exception.LogicException;
+import es.joseluisfm.pruebatecnica_w2m.kafka.KafkaCache;
 import es.joseluisfm.pruebatecnica_w2m.repository.SpaceShipRepository;
 import es.joseluisfm.pruebatecnica_w2m.repository.SpaceShipTypeRepository;
 import es.joseluisfm.pruebatecnica_w2m.service.SpaceShipService;
+import es.joseluisfm.pruebatecnica_w2m.utils.JsonUtils;
 
 @Service
 public class SpaceShipServiceImpl implements SpaceShipService {
 
 	private SpaceShipRepository spaceShipRepository;
 	private SpaceShipTypeRepository spaceShipTypeRepository;
+	
+	private KafkaCache kafkaCache;
+	
+	private static final String CACHE_PREFFIX = "SPACESHIP-";
+	
+	private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger(SpaceShipServiceImpl.class);
 
-	public SpaceShipServiceImpl(SpaceShipRepository spaceShipRepository, SpaceShipTypeRepository spaceShipTypeRepository) {
+	public SpaceShipServiceImpl(SpaceShipRepository spaceShipRepository, SpaceShipTypeRepository spaceShipTypeRepository, KafkaCache kafkaCache) {
 		this.spaceShipRepository = spaceShipRepository;
 		this.spaceShipTypeRepository = spaceShipTypeRepository;
+		this.kafkaCache = kafkaCache;
 	}
 
 	@Override
@@ -53,13 +62,25 @@ public class SpaceShipServiceImpl implements SpaceShipService {
 
 	@Override
 	public SpaceShipOUTDTO findById(long id) throws LogicException {
-		Optional<SpaceShipEntity> spaceShipEntityOptional = this.spaceShipRepository.findById(id);
-		if (!spaceShipEntityOptional.isPresent()) {
-			throw new LogicException("SpaceShip not found", HttpStatus.NOT_FOUND);
-		}
-		SpaceShipEntity spaceShipEntity = spaceShipEntityOptional.get();
-
-		return new SpaceShipOUTDTO(spaceShipEntity);
+		try {
+			SpaceShipOUTDTO cacheValue = (SpaceShipOUTDTO) kafkaCache.getValue(CACHE_PREFFIX + id, SpaceShipOUTDTO.class);
+			if (cacheValue != null) { // in cache
+				LOGGER.info("Id {} in cache", id);
+				return cacheValue;
+			} else { //not in cache
+				LOGGER.info("Id {} not in cache", id);
+				Optional<SpaceShipEntity> spaceShipEntityOptional = this.spaceShipRepository.findById(id);
+				if (!spaceShipEntityOptional.isPresent()) {
+					throw new LogicException("SpaceShip not found", HttpStatus.NOT_FOUND);
+				}
+				SpaceShipEntity spaceShipEntity = spaceShipEntityOptional.get();
+				SpaceShipOUTDTO spaceShipOUTDTO = new SpaceShipOUTDTO(spaceShipEntity);
+				kafkaCache.setValue(CACHE_PREFFIX + id, JsonUtils.toJson(spaceShipOUTDTO));
+				return spaceShipOUTDTO;
+			}
+		} catch (Exception e) {
+			throw new LogicException("Error getting space ship by id", e);
+		}		
 	}
 
 	@Override
@@ -114,6 +135,8 @@ public class SpaceShipServiceImpl implements SpaceShipService {
 		spaceShipEntity.setType(this.getSpaceShipTypeByIdType(editSpaceShipINDTO.getfIdType()));
 
 		this.spaceShipRepository.save(spaceShipEntity);
+		
+		this.kafkaCache.remove(CACHE_PREFFIX + spaceShipEntity.getId()); // borrar cache
 
 		return new SpaceShipOUTDTO(spaceShipEntity);
 	}
@@ -126,6 +149,7 @@ public class SpaceShipServiceImpl implements SpaceShipService {
 		}
 
 		this.spaceShipRepository.deleteById(id);
+		this.kafkaCache.remove(CACHE_PREFFIX + id); // borrar de cache
 	}
 
 }

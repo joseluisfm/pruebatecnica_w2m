@@ -7,6 +7,7 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import es.joseluisfm.pruebatecnica_w2m.utils.JsonUtils;
 import io.kcache.Cache;
 import io.kcache.KafkaCacheConfig;
 import io.micrometer.common.util.StringUtils;
@@ -56,10 +57,37 @@ public class KafkaCache {
 			cache.put(key, value);
 		}
 	}
+	
+	public void setValue(String key, Object value) throws KafkaException {
+		if (StringUtils.isNotBlank(key)) {
+			try {
+				cache.put(key, JsonUtils.toJson(value));
+			} catch (Exception e) {
+				throw new KafkaException("Error setting value in cache", e);
+			}
+		}
+	}
 
 	public String getValue(String key) {
 		if (StringUtils.isNotBlank(key)) {
 			return cache.get(key);
+		} else {
+			return null;
+		}
+	}
+	
+	public Object getValue(String key, Class<?> clazz) throws KafkaException {
+		if (StringUtils.isNotBlank(key)) {
+			try {
+				String cacheValue = cache.get(key);
+				if(StringUtils.isNotBlank(cacheValue)) {
+					return JsonUtils.fromJson(cacheValue, clazz);
+				} else {
+					return null;
+				}
+			} catch (Exception e) {
+				throw new KafkaException("Error getting value in cache", e);
+			}  
 		} else {
 			return null;
 		}

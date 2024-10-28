@@ -7,15 +7,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
+import es.joseluisfm.pruebatecnica_w2m.utils.JsonUtils;
 
 @Component
 public class Kafka {
 
 	private static String applicationName;
 	private static int serverPort;
-	
-	private static final Gson gson = new Gson();
 	
 	private KafkaTemplate<String, String> kafkaTemplate;
 	
@@ -45,8 +43,12 @@ public class Kafka {
 		}
 	}
 
-	public void sendMessage(String topic, Object object) throws KafkaException {
-		this.sendMessage(topic, gson.toJson(object));
+	public void sendMessage(String topic, Object object) throws KafkaException {		
+		try {
+			this.sendMessage(topic, JsonUtils.toJson(object));
+		} catch (Exception e) {
+			throw new KafkaException("Error publishing in kafka", e);
+		}
 	}
 
 	/**
