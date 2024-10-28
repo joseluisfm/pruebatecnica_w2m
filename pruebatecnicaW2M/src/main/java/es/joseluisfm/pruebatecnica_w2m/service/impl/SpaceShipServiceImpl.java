@@ -79,14 +79,21 @@ public class SpaceShipServiceImpl implements SpaceShipService {
 		SpaceShipEntity spaceShipEntity = new SpaceShipEntity();
 		spaceShipEntity.setName(newSpaceShipINDTO.getName());
 		spaceShipEntity.setSpeed(newSpaceShipINDTO.getSpeed());
-		spaceShipEntity.setType(this.getSpaceShiptTypeByIdType(newSpaceShipINDTO.getfIdType()));
+		spaceShipEntity.setType(this.getSpaceShipTypeByIdType(newSpaceShipINDTO.getfIdType()));
 
 		this.spaceShipRepository.save(spaceShipEntity);
 
 		return new SpaceShipOUTDTO(spaceShipEntity);
 	}
 
-	private SpaceShipTypeEntity getSpaceShiptTypeByIdType(Long idType) throws LogicException {
+	/**
+	 * Gets the space ship type by id type.
+	 *
+	 * @param idType the id type
+	 * @return the space ship  type entity by id type
+	 * @throws LogicException the logic exception, when a type is not found
+	 */
+	private SpaceShipTypeEntity getSpaceShipTypeByIdType(Long idType) throws LogicException {
 		Optional<SpaceShipTypeEntity> spaceShipTypeEntityOptional = this.spaceShipTypeRepository.findById(idType);
 		if (!spaceShipTypeEntityOptional.isPresent()) {
 			throw new LogicException("SpaceShip type is not valid", HttpStatus.BAD_REQUEST);
@@ -104,7 +111,7 @@ public class SpaceShipServiceImpl implements SpaceShipService {
 		SpaceShipEntity spaceShipEntity = spaceShipEntityOptional.get();
 		spaceShipEntity.setName(editSpaceShipINDTO.getName());
 		spaceShipEntity.setSpeed(editSpaceShipINDTO.getSpeed());
-		spaceShipEntity.setType(this.getSpaceShiptTypeByIdType(editSpaceShipINDTO.getfIdType()));
+		spaceShipEntity.setType(this.getSpaceShipTypeByIdType(editSpaceShipINDTO.getfIdType()));
 
 		this.spaceShipRepository.save(spaceShipEntity);
 
