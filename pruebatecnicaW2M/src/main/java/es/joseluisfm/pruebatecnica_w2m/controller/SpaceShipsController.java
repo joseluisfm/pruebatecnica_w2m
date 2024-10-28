@@ -18,6 +18,8 @@ import es.joseluisfm.pruebatecnica_w2m.dto.in.PageableINDTO;
 import es.joseluisfm.pruebatecnica_w2m.dto.out.SpaceShipOUTDTO;
 import es.joseluisfm.pruebatecnica_w2m.dto.out.SpaceShipsOUTDTO;
 import es.joseluisfm.pruebatecnica_w2m.exception.RestException;
+import es.joseluisfm.pruebatecnica_w2m.kafka.Kafka;
+import es.joseluisfm.pruebatecnica_w2m.kafka.KafkaException;
 import es.joseluisfm.pruebatecnica_w2m.service.SpaceShipService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -32,9 +34,11 @@ import jakarta.validation.constraints.Size;
 public class SpaceShipsController {
 
 	private SpaceShipService spaceShipService;
+	private Kafka kafka;
 
-	public SpaceShipsController(SpaceShipService spaceShipService) {
+	public SpaceShipsController(SpaceShipService spaceShipService, Kafka kafka) {
 		this.spaceShipService = spaceShipService;
+		this.kafka = kafka;
 	}
 
 	@PostMapping("/getAll")
@@ -89,6 +93,15 @@ public class SpaceShipsController {
 			spaceShipService.deleteSpaceShip(id);
 		} catch (Exception e) {
 			throw new RestException("Error editing SpaceShip", e);
+		}
+	}
+	
+	@GetMapping("/publisher")
+	public void publisher() throws RestException {
+		try {
+			this.kafka.sendMessage("PRUEBA", "Esto es una prueba");
+		} catch (Exception e) {
+			throw new RestException("Error publishing event", e);
 		}
 	}
 
